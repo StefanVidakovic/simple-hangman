@@ -15,10 +15,13 @@ class GameEngine:
     def getWord(self):
         return self.word
 
+    def getWordLength(self):
+        return len(self.word)
+
     def reload(self):
         self.lives = 5
         self.word = self.wordgenerator.getRandomWord()
-
+        print(self.word)
         self.letterSet = set(self.word)
 
         letters = list(self.word)
@@ -26,7 +29,7 @@ class GameEngine:
         for letter in letters:
             self.letterDict[letter] = list()
 
-        for letter in list(letterDict.keys()):
+        for letter in list(self.letterDict.keys()):
             for i in range(len(letters)):
                 if letters[i] == letter:
                     self.letterDict[letter].append(i)
