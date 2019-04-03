@@ -21,7 +21,6 @@ class GameEngine:
     def reload(self):
         self.lives = 5
         self.word = self.wordgenerator.getRandomWord()
-        print(self.word)
         self.letterSet = set(self.word)
 
         letters = list(self.word)

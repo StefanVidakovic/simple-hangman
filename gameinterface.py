@@ -34,6 +34,13 @@ class GameInterface:
         self.heartX = self.wordStartX
         self.heartY = self.wordStartY + 125
 
+        self.linkStanding = pygame.image.load('linkStanding.png')
+        self.linkDead = pygame.image.load('linkDead.png')
+        self.linkWins = pygame.image.load('linkWINS.png')
+
+        self.state = "playing"
+        self.uncoveredLetters = 0
+
 
     def initAlphaBet(self):
         x = 500
@@ -90,6 +97,11 @@ class GameInterface:
                 alpha.guessed = False
 
         self.updateHearts()
+        self.state = "playing"
+        self.uncoveredLetters = 0
+        pygame.draw.rect(self.screen, self.displayColor, (self.heartX, self.heartY, 25, 100))
+        self.screen.blit(self.linkStanding, (self.heartX, self.heartY+50))
+        pygame.display.update(pygame.Rect(self.heartX, self.heartY+50, 25, 46))
 
     def updateHearts(self):
         numLives = self.engine.getLives()
@@ -145,14 +157,26 @@ class GameInterface:
             if self.engine.getLives() <= 0:
                 #notify user of loss
                 self.showWord()
-            
+                if self.state != "lost":
+                    pygame.draw.rect(self.screen, self.displayColor, (self.heartX, self.heartY+50, 25, 46))
+                    self.screen.blit(self.linkDead, (self.heartX, self.heartY+50))
+                    pygame.display.update(pygame.Rect(self.heartX, self.heartY+50, 25, 46))
+                self.state = "lost"
+
+            if self.uncoveredLetters == self.engine.getWordLength():
+                #user won
+                if self.state == "playing":
+                    pygame.draw.rect(self.screen, self.displayColor, (self.heartX, self.heartY+50, 25, 46))
+                    self.screen.blit(self.linkWins, (self.heartX, self.heartY+50))
+                    pygame.display.update(pygame.Rect(self.heartX, self.heartY+50, 25, 46))
+                self.state = "won"
 
             for alpha in self.alphabetButtons:
                 if alpha.button():
                     letter = alpha.letter.lower()
                     if self.engine.containsLetter(letter):
                         #uncover letter in all places
-                        print("uncover")
+                        self.uncoveredLetters += 1
                         letterPositions = self.engine.letterPositions(letter)
                         self.uncoverLetter(letter, letterPositions)
                     else:
